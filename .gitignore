@@ -1,0 +1,14 @@
+
+# os related
+*.swp
+.DS_Store
+
+# env related
+package.json
+node_modules
+
+# idea / editor related
+*.code-workspace
+
+# git setup related
+.pre-commit-config.yaml
