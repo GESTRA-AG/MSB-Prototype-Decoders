@@ -2,10 +2,11 @@
 
 This repository contains Multisense Bolt (MSB) decoders for different LoRa network servers as those require different decoder formats.
 
-## Availavle Decoder / Supported LoRa Network Servers
+## Available Decoder Languages / Supported LoRa Network Servers
 
 - The Things Network (TTN)
 - LORIOT
+- Python3
 
 Please feel free to suggest new implementations for unavailable LoRa network servers or to create a pull-request.
 
@@ -17,7 +18,7 @@ All prototype models are supported.
 - MSB 100P
 - MSB 250P
 
-## Supported Firmware Version
+## Supported Firmware Versions
 
 All firmware versions are supported.
 
