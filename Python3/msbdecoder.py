@@ -33,9 +33,7 @@ def decode(
     NOTE
     * Decoder for payloads of Multisense Bolt (MSB) prototypes.
     * Includes all prototypes models: 20P, 100P, 250P.
-    * Firmware versions 0.36, 0.37, 0.38 do not have `int_temp` tag, so this
-      tag value will probably be shown as `null` / `nan` / `NaN` / `undefined`
-      or not shown at all.
+    * Firmware versions 0.36, 0.37, 0.38 do not have `int_temp` tag.
     * Firmware versions 0.40, 0.43, 0.44 support all data tags.
 
     Args:
