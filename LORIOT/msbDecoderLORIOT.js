@@ -20,7 +20,9 @@
   Last line of your script will be printed to the data payload column!
 **/
 
-function calcPT100(value) {
+const CONVERT = false;
+
+function convertPT100(value) {
   return ((250 - 0) / (2127 - 557)) * (value - 557);
 }
 
@@ -36,7 +38,9 @@ function decodeUplink(bytes) {
   data.noise_min = (bytes[2] << 8) + bytes[3];
   data.noise_max = (bytes[4] << 8) + bytes[5];
   data.battery = (bytes[6] << 8) + bytes[7];
-  data.PT100 = (bytes[8] << 8) + bytes[9];
+  data.PT100 = CONVERT
+    ? convertPT100((bytes[8] << 8) + bytes[9])
+    : (bytes[8] << 8) + bytes[9];
   data.mode = (bytes[10] & 0xfc) >> 2;
   data.gain = bytes[10] & 0x03;
   data.int_temp = bytes[11];
