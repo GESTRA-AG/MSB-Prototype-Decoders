@@ -1,17 +1,29 @@
 const CONVERT = false; // ! be patient with setting this to true on TTN
-// this will convert the measured PT100 value and forward non-raw data
+// ... this will convert the measured PT100 value and forward non-raw data
 
+/**
+ * Convert PT100 value into a temperature value.
+ *
+ * @param {number} - Raw PT100 value in ohms.
+ * @returns {number} - Temperature value in degrees Celsius.
+ *
+ */
 function convertPT100(value) {
   return (250 / (2127 - 557)) * (value - 557);
 }
 
+/**
+ * Decoder for payloads of Multisense Bolt (MSB) prototypes.
+ * Includes all prototypes models: 20P, 100P, 250P.
+ * Firmware versions 0.36, 0.37, 0.38 do not have `int_temp` tag, so this
+ * tag value will probably be shown as `null` / `nan` / `NaN` / `undefined`
+ * or not shown at all.
+ * Firmware versions 0.40, 0.43, 0.44 support all data tags.
+ *
+ * @param {Array} input - Uint8Array containing data byte values.
+ * @returns {object} JSON object with decoded data tags.
+ */
 function decodeUplink(input) {
-  // * Decoder for payloads of Multisense Bolt (MSB) prototypes.
-  // * Includes all prototypes models: 20P, 100P, 250P.
-  // * Firmware versions 0.36, 0.37, 0.38 do not have `int_temp` tag, so this
-  // * tag value will probably be shown as `null` / `nan` / `NaN` / `undefined`
-  // * or not shown at all.
-  // * Firmware versions 0.40, 0.43, 0.44 support all data tags.
   var data = {};
   data.noise_avg = (input.bytes[0] << 8) + input.bytes[1];
   data.noise_min = (input.bytes[2] << 8) + input.bytes[3];
