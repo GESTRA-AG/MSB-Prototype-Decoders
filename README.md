@@ -33,7 +33,7 @@ Software versions 0.40, 0.43, 0.44 support all data tags.
 
 ## Data Tags
 
-Keep in mind that Byte 11 is only available for software versions >= 0.40
+Byte 11 is only available for software versions >= 0.40
 
 | Position | Name      | Description                           | Raw Unit | Convertion Units |
 | -------: | :-------- | :------------------------------------ | :------: | :--------------: |
