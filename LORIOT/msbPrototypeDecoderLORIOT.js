@@ -20,17 +20,60 @@
   Last line of your script will be printed to the data payload column!
 **/
 
-const CONVERT = false;
+// * START USER SETTINGS
+// the variables inside this block are intended to be changed by users
+
+const CONVERT_PT100 = false; // enable / disable raw PT100 value conversion
+const PT100_UNIT = "Celsius"; // choose the temperature unit
+// ... available units are: 'celsius', 'fahrenheit', 'kelvin'
+
+const CONVERT_BATTERY = true; // enable / disable battery unit conversion to %
+
+// * END USER SETTINGS
 
 /**
  * Convert PT100 value into a temperature value.
  *
  * @param {number} value - Raw PT100 value in ohms.
- * @returns {number} - Temperature value in degrees Celsius.
+ * @param {string} [unit="C"] - Conversion unit (temperature unit).
+ * @returns {number | null | undefined} - Temperature value as specific unit.
  *
  */
-function convertPT100(value) {
-  return (250 / (2127 - 557)) * (value - 557);
+function convertPT100RawValue(value, unit = "C") {
+  try {
+    const tempC = (250 / (2127 - 557)) * (value - 557);
+    const unitL = unit.slice(0, 1).toUpperCase();
+    if (unitL === "C") {
+      return tempC;
+    } else if (unitL === "F") {
+      return (9 / 5) * tempC + 32;
+    } else if (unitL === "K") {
+      return tempC + 273.15;
+    } else {
+      return value;
+    }
+  } catch (e) {
+    return undefined;
+  }
+}
+
+/**
+ * Convert battery voltage level (in mV) to percentage [0, 100] value.
+ *
+ * @param {number} value - Raw battery level in millivolts (mV) [2500, 3600].
+ * @param {number} min - Lower threshold to substitude with 0 %.
+ * @param {number} max - Upper threshold to substitude with 100 %.
+ * @returns {number} Battery level as percentage (%) in range [0, 100].
+ */
+function convertBatteryToPercentage(value, min = 2500, max = 3600) {
+  const BAT = Math.trunc((100 * (value - min)) / (max - min));
+  if (BAT > 100) {
+    return 100;
+  } else if (BAT < 0) {
+    return 0;
+  } else {
+    return BAT;
+  }
 }
 
 /**
@@ -49,10 +92,12 @@ function decodeUplink(bytes) {
   data.noise_avg = (bytes[0] << 8) + bytes[1];
   data.noise_min = (bytes[2] << 8) + bytes[3];
   data.noise_max = (bytes[4] << 8) + bytes[5];
-  data.battery = (bytes[6] << 8) + bytes[7];
-  data.pt100 = CONVERT
-    ? convertPT100((bytes[8] << 8) + bytes[9])
-    : (bytes[8] << 8) + bytes[9];
+  data.battery = CONVERT_BATTERY
+    ? convertBatteryToPercentage((input.bytes[6] << 8) + input.bytes[7])
+    : (input.bytes[6] << 8) + input.bytes[7];
+  data.pt100 = CONVERT_PT100
+    ? convertPT100RawValue((input.bytes[8] << 8) + input.bytes[9], PT100_UNIT)
+    : (input.bytes[8] << 8) + input.bytes[9];
   data.mode = (bytes[10] & 0xfc) >> 2;
   data.gain = bytes[10] & 0x03;
   data.node_temp = bytes[11];

@@ -1,10 +1,9 @@
-from __future__ import annotations
-from typing import Literal
+from typing import Dict, Literal
 import json
 
 
-def convertPT100(value: int | float) -> float:
-    """Convert PT100 value for Multisense Bolt (MSB) prototypes.
+def convert_raw_pt100(value: int | float) -> float:
+    """Convert raw PT100 value of Multisense Bolt (MSB) prototypes to °C
 
     Args:
         value (int | float): Raw PT100 sensor value.
@@ -13,7 +12,7 @@ def convertPT100(value: int | float) -> float:
         TypeError: If the input data type of `value` argument is invalid.
 
     Returns:
-        float: Converted PT100 value.
+        float: Converted PT100 value in degree Celsus [°C].
     """
     if not isinstance(value, (int, float)):
         raise TypeError(
@@ -33,7 +32,7 @@ def decode(
     NOTE
     * Decoder for payloads of Multisense Bolt (MSB) prototypes.
     * Includes all prototypes models: 20P, 100P, 250P.
-    * Firmware versions 0.36, 0.37, 0.38 do not have `int_temp` tag.
+    * Firmware versions 0.36, 0.37, 0.38 do not have `node_temp` tag.
     * Firmware versions 0.40, 0.43, 0.44 support all data tags.
 
     Args:
@@ -75,7 +74,7 @@ def decode(
             f"Data type `dtype` must be one of the following literals"
             f"({Literal}): 'dictionary' or 'jsonstring'"
         )
-    data: dict[str, int | float] = {}
+    data: Dict[str, int | float] = {}
     data["noise_avg"]: int = int.from_bytes(
         bytes=payload[0:2], byteorder="big", signed=False
     )
@@ -89,7 +88,7 @@ def decode(
         bytes=payload[6:8], byteorder="big", signed=False
     )
     data["pt100"]: int | float = (
-        convertPT100(
+        convert_raw_pt100(
             int.from_bytes(bytes=payload[8:10], byteorder="big", signed=False)
         )
         if convert
