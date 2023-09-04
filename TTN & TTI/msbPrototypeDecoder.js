@@ -96,12 +96,17 @@ function decodeUplink(input) {
     );
   }
   // * detect errors
-  if (typeof CONVERT_PT100 == "boolean") {
+  if (typeof CONVERT_PT100 != "boolean") {
     errors.push(
       `CONVERT_PT100 constant has invalid type: ${typeof CONVERT_PT100}`
     );
   }
-  if (typeof PT100_UNIT == "string") {
+  if (typeof CONVERT_BATTERY != "boolean") {
+    errors.push(
+      `CONVERT_BATTERY constant has invalid type: ${typeof CONVERT_BATTERY}`
+    );
+  }
+  if (typeof PT100_UNIT != "string") {
     errors.push(`PT100_UNIT constant has invalid type: ${typeof PT100_UNIT}`);
   }
   if (data.pt100 === undefined) {
